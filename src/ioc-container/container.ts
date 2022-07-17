@@ -24,8 +24,8 @@ export class Container implements ContainerDef {
       lazyConstructor ??
       {
         [true as any]: () => service,
-        [!!service?.name as any]: () => service(),
-        [!!service?.constructor as any]: () => new service(),
+        [!!service?.name as any]: () => (service as Function)(),
+        [!!service?.constructor as any]: () => new (service as Type)(),
         [isPrimitive(service) as any]: () => service,
       }[true as any];
 

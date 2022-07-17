@@ -1,10 +1,10 @@
 export interface ServiceInterface {}
 
-export interface Type<T> extends Function {
-  new (...args: any[]): T;
+export interface Type extends Function {
+  new (...args: any[]): unknown;
 }
 
-export type Key = ServiceKey | Function | unknown;
+export type Key = ServiceKey | Function | String | Number;
 
 export interface ServiceKey extends Function {
   constructor?: { name: string };
