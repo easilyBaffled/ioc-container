@@ -36,11 +36,9 @@ describe('IOC Container', () => {
 
       expect(actual).toEqual(expected);
     });
-    it.concurrent.todo('should register A with lazy builder and use A', () => {
-      const actual = c
-        .register(A as ServiceKey, () => new A())
-        .isRegistered(A as ServiceKey);
-      const expected = null;
+    it.concurrent('should register A with lazy builder and use A', () => {
+      const actual = c.register(A as ServiceKey, () => new A({ id: 0 })).A.id;
+      const expected = new A({ id: 0 }).id;
 
       expect(actual).toEqual(expected);
     });
