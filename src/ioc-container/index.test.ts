@@ -2,34 +2,48 @@ import { assert, expect, test, describe, it } from 'vitest';
 
 // Edit an assertion and save to see HMR in action
 
-test('Math.sqrt()', () => {
-  expect(Math.sqrt(4)).toBe(2);
-  expect(Math.sqrt(144)).toBe(12);
-  expect(Math.sqrt(2)).toBe(Math.SQRT2);
-});
+describe('IOC Container', () => {
+  describe('Happy Path', () => {
+    it.concurrent('should register A', () => {
+      const actual = null;
+      const expected = null;
 
-test('JSON', () => {
-  const input = {
-    foo: 'hello',
-    bar: 'world',
-  };
+      expect(actual).toEqual(expected);
+    });
+    it.concurrent('should register A(B) and B', () => {
+      const actual = null;
+      const expected = null;
 
-  const output = JSON.stringify(input);
+      expect(actual).toEqual(expected);
+    });
+    it.concurrent('should be able to use A(B)', () => {
+      const actual = null;
+      const expected = null;
 
-  expect(output).eq('{"foo":"hello","bar":"world"}');
-  assert.deepEqual(JSON.parse(output), input, 'matches original');
-});
-
-describe('suite name', () => {
-  it('foo', () => {
-    assert.equal(Math.sqrt(4), 2);
+      expect(actual).toEqual(expected);
+    });
   });
+  describe('Error Handling', () => {
+    it.concurrent(
+      'should fail when getting A without registering it first',
+      () => {
+        const actual = null;
+        const expected = null;
 
-  it('bar', () => {
-    expect(1 + 1).eq(2);
-  });
+        expect(actual).toEqual(expected);
+      }
+    );
+    it.concurrent('should fail when registering A twice', () => {
+      const actual = null;
+      const expected = null;
 
-  it('snapshot', () => {
-    expect({ foo: 'bar' }).toMatchSnapshot();
+      expect(actual).toEqual(expected);
+    });
+    it.concurrent('should fail when using A(B) without registering B', () => {
+      const actual = null;
+      const expected = null;
+
+      expect(actual).toEqual(expected);
+    });
   });
 });
