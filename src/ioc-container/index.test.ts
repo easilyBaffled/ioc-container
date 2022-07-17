@@ -22,6 +22,12 @@ describe('IOC Container', () => {
 
       expect(actual).toEqual(expected);
     });
+    it.concurrent('should be able to inject A(B) and use A(B)', () => {
+      const actual = null;
+      const expected = null;
+
+      expect(actual).toEqual(expected);
+    });
   });
   describe('Error Handling', () => {
     it.concurrent(
