@@ -1,26 +1,12 @@
-export interface ServiceInterface {}
+import {
+  ContainerDef,
+  LazyConstructor,
+  Key,
+  Type,
+  ServiceInterface,
+} from './index.d';
 
-export interface Type<T> extends Function {
-  new (...args: any[]): T;
-}
-
-export type Key = ServiceKey | Function | string | number;
-
-export interface ServiceKey extends Function {
-  constructor?: { name: string };
-}
-
-type LazyConstructor = (c: Container) => ServiceInterface;
-
-export interface ContainerDef {
-  [service: string]: unknown;
-  register(service: ServiceKey, lazyConstructor?: LazyConstructor): Container;
-  isRegistered(service: ServiceKey): boolean;
-}
-
-function isPrimitive(test: unknown): boolean {
-  return test !== Object(test);
-}
+import { isPrimitive } from './utils';
 
 export class Container implements ContainerDef {
   private registrationMap: Map<string, unknown> = new Map();

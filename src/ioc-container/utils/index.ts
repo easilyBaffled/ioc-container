@@ -1,0 +1,1 @@
+export { isPrimitive } from './isPrimitive';

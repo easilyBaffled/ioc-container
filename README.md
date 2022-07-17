@@ -7,19 +7,28 @@
 - [ ] 🥦 create roadmap
 - [ ] 🥦 create type def for container
 
-- [ ] 🥦 create initial container
+- [x] 🥦 create initial container
 
-  - [ ] 🥦 register Map
-  - [ ] 🥦 initialized Map
-  - [ ] 🥦 isRegistered, hasInstance for debugging
-  - [ ] 🥦 register function
+  - [x] 🥦 register Map
+  - [x] 🥦 initialized Map
+  - [x] 🥦 isRegistered, hasInstance for debugging
+  - [x] 🥦 register function
   - [ ] 🍰 unregister function
-  - [ ] 🥦 get handling
-  - [ ] 🥦 happy path tests passing
-  - [ ] 🍰 error handling tests passing
-  - [ ] 🥦 Inject
+  - [x] 🥦 get handling
+  - [x] 🥦 happy path tests passing
+  - [x] 🍰 error handling tests passing
+  - [x] 🥦 Inject
 
-- [ ] 🥦 revisit roadmap
+- [x] 🥦 revisit roadmap
+
+- [ ] 🥦 Clean UP
+
+  - [ ] 🥦 Pull out types
+  - [ ] 🍰 Fix type errors
+  - [ ] 🥦 Pull util functions
+  - [ ] 🥦 Document functionality
+  - [ ] 🥦 Document strange parts
+  - [ ] 🥦 Update README
 
 - [ ] 🍰 example app using container
 
