@@ -1,14 +1,14 @@
 import { expect, describe, it } from 'vitest';
-import { Container, ContainerDef, ServiceConstructor } from './';
+import { Container, ContainerDef, ServiceKey } from './';
 // Edit an assertion and save to see HMR in action
 
-class A implements ServiceConstructor {
+class A implements ServiceKey {
   constructor(dependencies: {}) {
     return Object.assign(this, dependencies);
   }
 }
 
-class B implements ServiceConstructor {}
+class B implements ServiceKey {}
 
 describe('IOC Container', () => {
   let c: ContainerDef;
@@ -17,7 +17,7 @@ describe('IOC Container', () => {
   });
   describe('Happy Path', () => {
     it.concurrent('should register A', () => {
-      const actual = c.register(A).isRegistered(A);
+      const actual = c.register(A as ServiceKey).isRegistered(A as ServiceKey);
       const expected = true;
 
       expect(actual).toEqual(expected);

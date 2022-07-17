@@ -1,6 +1,6 @@
 export interface ServiceInterface {}
 
-export interface ServiceConstructor {
+export interface ServiceKey {
   constructor?: { name: string };
   name?: string;
 }
@@ -8,17 +8,14 @@ export interface ServiceConstructor {
 type LazyConstructor = (c: Container) => ServiceInterface;
 
 export interface ContainerDef {
-  register(
-    service: ServiceConstructor,
-    lazyConstructor?: LazyConstructor
-  ): Container;
-  isRegistered(service: ServiceConstructor): boolean;
+  register(service: ServiceKey, lazyConstructor?: LazyConstructor): Container;
+  isRegistered(service: ServiceKey): boolean;
 }
 
 export class Container implements ContainerDef {
-  private registrationMap: Map<ServiceConstructor, unknown> = new Map();
+  private registrationMap: Map<ServiceKey, unknown> = new Map();
   private serviceMap: Map<LazyConstructor, ServiceInterface> = new Map();
-  register(service: ServiceConstructor, lazyConstructor?: LazyConstructor) {
+  register(service: typeof ServiceKey, lazyConstructor?: LazyConstructor) {
     if (this.isRegistered(service))
       throw Error(
         service?.constructor?.name ??
@@ -29,7 +26,7 @@ export class Container implements ContainerDef {
     this.registrationMap.set(service, lazyConstructor);
     return this;
   }
-  isRegistered(service: ServiceConstructor) {
+  isRegistered(service: ServiceKey) {
     return this.registrationMap.has(service);
   }
 }
