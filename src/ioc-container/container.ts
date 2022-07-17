@@ -18,6 +18,10 @@ export interface ContainerDef {
   isRegistered(service: ServiceKey): boolean;
 }
 
+function isPrimitive(test: unknown): boolean {
+  return test !== Object(test);
+}
+
 export class Container implements ContainerDef {
   private registrationMap: Map<string, unknown> = new Map();
   private serviceMap: Map<string, ServiceInterface> = new Map();
@@ -38,6 +42,8 @@ export class Container implements ContainerDef {
           const service = builder ? builder(prox) : prop;
           target.serviceMap.set(prop, service);
           return service;
+        } else {
+          throw new Error(`${prop} has not been registered`);
         }
       },
     });
@@ -45,11 +51,7 @@ export class Container implements ContainerDef {
 
   register(service: Key, lazyConstructor?: LazyConstructor) {
     if (this.isRegistered(service))
-      throw Error(
-        service?.constructor?.name ??
-          service?.name ??
-          service + ' has already been registered'
-      );
+      throw Error(`${service?.name ?? service} has already been registered`);
 
     const constuctor =
       lazyConstructor ??
@@ -57,6 +59,7 @@ export class Container implements ContainerDef {
         [true as any]: () => service,
         [!!service?.name as any]: () => service(),
         [!!service?.constructor as any]: () => new service(),
+        [isPrimitive(service) as any]: () => service,
       }[true as any];
 
     this.registrationMap.set(service?.name ?? service, constuctor);

@@ -12,25 +12,62 @@ class B implements ServiceKey {}
 
 const AWithB = new A({ B: new B() });
 
+function catchAndReturn(toxicFn) {
+  try {
+    return toxicFn();
+  } catch (e) {
+    return e.message;
+  }
+}
+
 describe('IOC Container', () => {
   let c: ContainerDef;
   beforeEach(() => {
     c = new Container();
   });
+  it('A full Example, should not fail', () => {
+    const Analytics = {
+      init(id: string, ...middleWare: Function[]) {
+        return {
+          triggerEvent(event: string) {
+            middleWare.forEach((fn) => {
+              console.log(fn);
+              fn(event);
+            });
+            return event;
+          },
+        };
+      },
+    };
+
+    function Logger(...input) {
+      console.log(...input);
+    }
+
+    c.register(Logger, () => Logger)
+      .register('Analytics', (c) => Analytics.init(c.SECURE_ID, c.Logger))
+      .register('SECURE_ID');
+
+    const analyticsAbstraction = c.inject({}, (c) => ({
+      sendEvent: c.Analytics.triggerEvent,
+    }));
+
+    analyticsAbstraction.sendEvent('test');
+  });
   describe('Happy Path', () => {
-    it.concurrent('should register A', () => {
+    it('should register A', () => {
       const actual = c.register(A as ServiceKey).isRegistered(A as ServiceKey);
       const expected = true;
 
       expect(actual).toEqual(expected);
     });
-    it.concurrent('should register A and use A', () => {
+    it('should register A and use A', () => {
       const actual = c.register(A as ServiceKey).A;
       const expected = new A();
 
       expect(actual).toEqual(expected);
     });
-    it.concurrent('should register A with lazy builder', () => {
+    it('should register A with lazy builder', () => {
       const actual = c
         .register(A as ServiceKey, () => new A())
         .isRegistered(A as ServiceKey);
@@ -38,13 +75,13 @@ describe('IOC Container', () => {
 
       expect(actual).toEqual(expected);
     });
-    it.concurrent('should register A with lazy builder and use A', () => {
+    it('should register A with lazy builder and use A', () => {
       const actual = c.register(A as ServiceKey, () => new A({ id: 0 })).A.id;
       const expected = new A({ id: 0 }).id;
 
       expect(actual).toEqual(expected);
     });
-    it.concurrent('should register A(B) and B', () => {
+    it('should register A(B) and B', () => {
       const actual = c
         .register(A as ServiceKey, (c) => new A({ B: c.B }))
         .register(B)
@@ -53,7 +90,7 @@ describe('IOC Container', () => {
 
       expect(actual).toEqual(expected);
     });
-    it.concurrent('should be able to use A(B)', () => {
+    it('should be able to use A(B)', () => {
       const actual = c
         .register(A as ServiceKey, (c) => new A({ B: c.B }))
         .register(B).A.B;
@@ -61,7 +98,7 @@ describe('IOC Container', () => {
 
       expect(actual).toEqual(expected);
     });
-    it.concurrent('should be able to inject A(B) and use A(B)', () => {
+    it('should be able to inject A(B) and use A(B)', () => {
       const actual = c
         .register(A as ServiceKey, (c) => new A({ B: c.B }))
         .register(B)
@@ -75,29 +112,27 @@ describe('IOC Container', () => {
     });
   });
   describe('Error Handling', () => {
-    it.concurrent.todo(
-      'should fail when getting A without registering it first',
-      () => {
-        const actual = null;
-        const expected = null;
-
-        expect(actual).toEqual(expected);
-      }
-    );
-    it.concurrent.todo('should fail when registering A twice', () => {
-      const actual = null;
-      const expected = null;
+    it('should fail when getting A without registering it first', () => {
+      const actual = catchAndReturn(() => c.A);
+      const expected = 'A has not been registered';
 
       expect(actual).toEqual(expected);
     });
-    it.concurrent.todo(
-      'should fail when using A(B) without registering B',
-      () => {
-        const actual = null;
-        const expected = null;
+    it('should fail when registering A twice', () => {
+      const actual = catchAndReturn(() =>
+        c.register(A as ServiceKey).register(A as ServiceKey)
+      );
+      const expected = 'A has already been registered';
 
-        expect(actual).toEqual(expected);
-      }
-    );
+      expect(actual).toEqual(expected);
+    });
+    it('should fail when using A(B) without registering B', () => {
+      const actual = catchAndReturn(
+        () => c.register(A as ServiceKey, (c) => new A({ B: c.B })).A
+      );
+      const expected = 'B has not been registered';
+
+      expect(actual).toEqual(expected);
+    });
   });
 });
