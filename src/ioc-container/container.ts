@@ -29,12 +29,12 @@ export class Container implements ContainerDef {
   createContainerProxy(obj: ContainerDef) {
     return new Proxy(obj, {
       get(target: ContainerDef, prop: string, prox) {
-        console.log(prop, target);
         if (prop in target) return target[prop];
         else if (target.serviceMap.has(prop))
           return target.serviceMap.get(prop);
         else if (target.registrationMap.has(prop)) {
           const builder = target.registrationMap.get(prop);
+          console.log(builder, prop);
           const service = builder ? builder(prox) : prop;
           target.serviceMap.set(prop, service);
           return service;
@@ -59,15 +59,10 @@ export class Container implements ContainerDef {
         [!!service?.constructor as any]: () => new service(),
       }[true as any];
 
-    this.registrationMap.set(
-      service?.constructor?.name ?? service?.name ?? service,
-      constuctor
-    );
+    this.registrationMap.set(service?.name ?? service, constuctor);
     return this.createContainerProxy(this);
   }
   isRegistered(service: Key) {
-    return this.registrationMap.has(
-      service?.constructor?.name ?? service?.name ?? service
-    );
+    return this.registrationMap.has(service?.name ?? service);
   }
 }
