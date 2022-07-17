@@ -29,6 +29,7 @@ export class Container implements ContainerDef {
   createContainerProxy(obj: ContainerDef) {
     return new Proxy(obj, {
       get(target: ContainerDef, prop: string, prox) {
+        console.log(prop, target);
         if (prop in target) return target[prop];
         else if (target.serviceMap.has(prop))
           return target.serviceMap.get(prop);
@@ -62,7 +63,7 @@ export class Container implements ContainerDef {
       service?.constructor?.name ?? service?.name ?? service,
       constuctor
     );
-    return this;
+    return this.createContainerProxy(this);
   }
   isRegistered(service: Key) {
     return this.registrationMap.has(
