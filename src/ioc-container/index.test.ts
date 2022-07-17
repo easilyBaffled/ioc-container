@@ -10,6 +10,8 @@ class A implements ServiceKey {
 
 class B implements ServiceKey {}
 
+const AWithB = new A({ B: new B() });
+
 describe('IOC Container', () => {
   let c: ContainerDef;
   beforeEach(() => {
@@ -55,13 +57,19 @@ describe('IOC Container', () => {
       const actual = c
         .register(A as ServiceKey, (c) => new A({ B: c.B }))
         .register(B).A.B;
-      const expected = new A({ B: new B() }).B;
+      const expected = AWithB.B;
 
       expect(actual).toEqual(expected);
     });
-    it.concurrent.todo('should be able to inject A(B) and use A(B)', () => {
-      const actual = null;
-      const expected = null;
+    it.concurrent('should be able to inject A(B) and use A(B)', () => {
+      const actual = c
+        .register(A as ServiceKey, (c) => new A({ B: c.B }))
+        .register(B)
+        .inject({}, (c) => ({
+          a: c.A,
+          b: c.B,
+        })).a.B;
+      const expected = AWithB.B;
 
       expect(actual).toEqual(expected);
     });

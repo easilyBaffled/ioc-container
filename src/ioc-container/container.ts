@@ -34,7 +34,7 @@ export class Container implements ContainerDef {
           return target.serviceMap.get(prop);
         else if (target.registrationMap.has(prop)) {
           const builder = target.registrationMap.get(prop);
-          console.log(builder, prop);
+
           const service = builder ? builder(prox) : prop;
           target.serviceMap.set(prop, service);
           return service;
@@ -64,5 +64,9 @@ export class Container implements ContainerDef {
   }
   isRegistered(service: Key) {
     return this.registrationMap.has(service?.name ?? service);
+  }
+
+  inject(target: {}, injector: (c: ContainerDef) => {}) {
+    return Object.assign(target, injector(this));
   }
 }
