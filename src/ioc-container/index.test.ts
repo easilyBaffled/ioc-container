@@ -1,9 +1,9 @@
-import { expect, describe, it } from 'vitest';
+import { expect, describe, it, beforeEach } from 'vitest';
 import { Container, ContainerDef, ServiceKey } from './';
 // Edit an assertion and save to see HMR in action
 
 class A implements ServiceKey {
-  constructor(dependencies: {}) {
+  constructor(dependencies?: {}) {
     return Object.assign(this, dependencies);
   }
 }
@@ -22,8 +22,10 @@ describe('IOC Container', () => {
 
       expect(actual).toEqual(expected);
     });
-    it.concurrent.todo('should register A with lazy builder', () => {
-      const actual = null;
+    it.concurrent('should register A with lazy builder', () => {
+      const actual = c
+        .register(A as ServiceKey, () => new A())
+        .isRegistered(A as ServiceKey);
       const expected = null;
 
       expect(actual).toEqual(expected);
