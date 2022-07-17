@@ -6,33 +6,14 @@ import {
   ServiceInterface,
 } from './index.d';
 
-import { isPrimitive } from './utils';
+import { isPrimitive, createContainerProxy } from './utils';
 
 export class Container implements ContainerDef {
   private registrationMap: Map<string, unknown> = new Map();
   private serviceMap: Map<string, ServiceInterface> = new Map();
 
   constructor() {
-    return this.createContainerProxy(this);
-  }
-
-  createContainerProxy(obj: ContainerDef) {
-    return new Proxy(obj, {
-      get(target: ContainerDef, prop: string, prox) {
-        if (prop in target) return target[prop];
-        else if (target.serviceMap.has(prop))
-          return target.serviceMap.get(prop);
-        else if (target.registrationMap.has(prop)) {
-          const builder = target.registrationMap.get(prop);
-
-          const service = builder ? builder(prox) : prop;
-          target.serviceMap.set(prop, service);
-          return service;
-        } else {
-          throw new Error(`${prop} has not been registered`);
-        }
-      },
-    });
+    return createContainerProxy(this);
   }
 
   register(service: Key, lazyConstructor?: LazyConstructor) {
@@ -49,7 +30,7 @@ export class Container implements ContainerDef {
       }[true as any];
 
     this.registrationMap.set(service?.name ?? service, constuctor);
-    return this.createContainerProxy(this);
+    return createContainerProxy(this);
   }
   isRegistered(service: Key) {
     return this.registrationMap.has(service?.name ?? service);
