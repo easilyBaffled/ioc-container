@@ -22,7 +22,21 @@ describe('IOC Container', () => {
 
       expect(actual).toEqual(expected);
     });
+    it.concurrent('should register A and use A', () => {
+      const actual = c.register(A as ServiceKey).A;
+      const expected = new A();
+
+      expect(actual).toEqual(expected);
+    });
     it.concurrent('should register A with lazy builder', () => {
+      const actual = c
+        .register(A as ServiceKey, () => new A())
+        .isRegistered(A as ServiceKey);
+      const expected = null;
+
+      expect(actual).toEqual(expected);
+    });
+    it.concurrent('should register A with lazy builder and use A', () => {
       const actual = c
         .register(A as ServiceKey, () => new A())
         .isRegistered(A as ServiceKey);
