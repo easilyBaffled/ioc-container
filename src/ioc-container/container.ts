@@ -15,7 +15,7 @@ export interface ContainerDef {
 export class Container implements ContainerDef {
   private registrationMap: Map<ServiceKey, unknown> = new Map();
   private serviceMap: Map<LazyConstructor, ServiceInterface> = new Map();
-  register(service: typeof ServiceKey, lazyConstructor?: LazyConstructor) {
+  register(service: ServiceKey, lazyConstructor?: LazyConstructor) {
     if (this.isRegistered(service))
       throw Error(
         service?.constructor?.name ??
