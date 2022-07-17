@@ -51,9 +51,11 @@ describe('IOC Container', () => {
 
       expect(actual).toEqual(expected);
     });
-    it.concurrent.todo('should be able to use A(B)', () => {
-      const actual = null;
-      const expected = null;
+    it.concurrent('should be able to use A(B)', () => {
+      const actual = c
+        .register(A as ServiceKey, (c) => new A({ B: c.B }))
+        .register(B).A.B;
+      const expected = new A({ B: new B() }).B;
 
       expect(actual).toEqual(expected);
     });
