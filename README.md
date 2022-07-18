@@ -1,4 +1,13 @@
-# vitest-dev-vitest-wbtgvr
+# Inversion of Control Container
+
+This project represents an initial attempt at building an Inversion of Control Container. The majority of the code exists in `src/ioc-container/container.ts`
+I wrote a test suite to hold me to the mark as well as work as examples. You can see the tests in action by running `npm run test:ui`
+
+## Notes
+
+### TS
+
+I chose to use Typescript for the project, though it does not always agree with what I am doing. I am using a `Proxy` to allow access to properties on an object that aren't actually there. As such it is hard to let TS know how to handle these things.
 
 [Edit on StackBlitz ⚡️](https://stackblitz.com/edit/vitest-dev-vitest-wbtgvr)
 
@@ -23,12 +32,12 @@
 
 - [ ] 🥦 Clean UP
 
-  - [ ] 🥦 Pull out types
+  - [x] 🥦 Pull out types
   - [ ] 🍰 Fix type errors
-  - [ ] 🥦 Pull util functions
-  - [ ] 🥦 Document functionality
-  - [ ] 🥦 Document strange parts
-  - [ ] 🥦 Update README
+  - [ x 🥦 Pull util functions
+  - [x] 🥦 Document functionality
+  - [x] 🥦 Document strange parts
+  - [x] 🥦 Update README
 
 - [ ] 🍰 example app using container
 

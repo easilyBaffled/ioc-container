@@ -1,18 +1,18 @@
 import { expect, describe, it, beforeEach } from 'vitest';
-import { Container, ContainerDef, ServiceKey } from './';
+import { Container, ContainerDef, Klass } from './';
 // Edit an assertion and save to see HMR in action
 
-class A implements ServiceKey {
+class A {
   constructor(dependencies?: {}) {
     return Object.assign(this, dependencies);
   }
 }
 
-class B implements ServiceKey {}
+class B {}
 
 const AWithB = new A({ B: new B() });
 
-function catchAndReturn(toxicFn) {
+function catchAndReturn(toxicFn: Function) {
   try {
     return toxicFn();
   } catch (e) {
@@ -40,12 +40,14 @@ describe('IOC Container', () => {
       },
     };
 
-    function Logger(...input) {
+    function Logger(...input: unknown[]) {
       console.log(...input);
     }
 
     c.register(Logger, () => Logger)
-      .register('Analytics', (c) => Analytics.init(c.SECURE_ID, c.Logger))
+      .register('Analytics', (c: ContainerDef) =>
+        Analytics.init(c.SECURE_ID, c.Logger)
+      )
       .register('SECURE_ID');
 
     const analyticsAbstraction = c.inject({}, (c) => ({
@@ -56,34 +58,32 @@ describe('IOC Container', () => {
   });
   describe('Happy Path', () => {
     it('should register A', () => {
-      const actual = c.register(A as ServiceKey).isRegistered(A as ServiceKey);
+      const actual = c.register(A).isRegistered(A);
       const expected = true;
 
       expect(actual).toEqual(expected);
     });
     it('should register A and use A', () => {
-      const actual = c.register(A as ServiceKey).A;
+      const actual = c.register(A).A;
       const expected = new A();
 
       expect(actual).toEqual(expected);
     });
     it('should register A with lazy builder', () => {
-      const actual = c
-        .register(A as ServiceKey, () => new A())
-        .isRegistered(A as ServiceKey);
+      const actual = c.register(A, () => new A()).isRegistered(A);
       const expected = true;
 
       expect(actual).toEqual(expected);
     });
     it('should register A with lazy builder and use A', () => {
-      const actual = c.register(A as ServiceKey, () => new A({ id: 0 })).A.id;
+      const actual = c.register(A, () => new A({ id: 0 })).A.id;
       const expected = new A({ id: 0 }).id;
 
       expect(actual).toEqual(expected);
     });
     it('should register A(B) and B', () => {
       const actual = c
-        .register(A as ServiceKey, (c) => new A({ B: c.B }))
+        .register(A, (c) => new A({ B: c.B }))
         .register(B)
         .isRegistered(B);
       const expected = true;
@@ -91,18 +91,16 @@ describe('IOC Container', () => {
       expect(actual).toEqual(expected);
     });
     it('should be able to use A(B)', () => {
-      const actual = c
-        .register(A as ServiceKey, (c) => new A({ B: c.B }))
-        .register(B).A.B;
+      const actual = c.register(A, (c) => new A({ B: c.B })).register(B).A.B;
       const expected = AWithB.B;
 
       expect(actual).toEqual(expected);
     });
     it('should be able to inject A(B) and use A(B)', () => {
       const actual = c
-        .register(A as ServiceKey, (c) => new A({ B: c.B }))
+        .register(A, (c) => new A({ B: c.B }))
         .register(B)
-        .inject({}, (c) => ({
+        .inject({}, (c: ContainerDef) => ({
           a: c.A,
           b: c.B,
         })).a.B;
@@ -119,16 +117,14 @@ describe('IOC Container', () => {
       expect(actual).toEqual(expected);
     });
     it('should fail when registering A twice', () => {
-      const actual = catchAndReturn(() =>
-        c.register(A as ServiceKey).register(A as ServiceKey)
-      );
+      const actual = catchAndReturn(() => c.register(A).register(A));
       const expected = 'A has already been registered';
 
       expect(actual).toEqual(expected);
     });
     it('should fail when using A(B) without registering B', () => {
       const actual = catchAndReturn(
-        () => c.register(A as ServiceKey, (c) => new A({ B: c.B })).A
+        () => c.register(A, (c) => new A({ B: c.B })).A
       );
       const expected = 'B has not been registered';
 
